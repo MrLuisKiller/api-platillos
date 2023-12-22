@@ -39,7 +39,7 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    let status = 404
+    let status = 400
     let message = 'ID existente'
     const { id } = req.body
     if (!platillos.find(platillo => platillo.id == id)) {
