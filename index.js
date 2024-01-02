@@ -1,12 +1,12 @@
-require('dotenv').config()
+import express, { Router, json } from 'express'
+import cors from 'cors'
+import { config } from 'dotenv'
 
-const express = require('express')
 const app = express()
-const router = express.Router()
-const cors = require('cors')
-const port = process.env.PORT
+const router = Router()
+const PORT = config().parsed.PORT
 
-app.use(express.json())
+app.use(json())
 app.use(cors())
 
 let platillos = [
@@ -57,6 +57,7 @@ router.put('/', (req, res) => {
     const id = parseInt(req.query.id)
     let status = 400
     let message = 'ID necesaria'
+    let data = null
     if (id) {
         message = 'nombre o precio necesarios'
         const { nombre, precio } = req.body
@@ -71,12 +72,13 @@ router.put('/', (req, res) => {
                     platillos[index].precio = precio
                 status = 200
                 message = 'Se actualizo el platillo'
+                data = platillos[index]
             }
         }
     }
     res.status(status).json({
         message,
-        data: null
+        data
     })
 })
 
@@ -84,11 +86,13 @@ router.delete('/', (req, res) => {
     const id = parseInt(req.query.id)
     let status = 400
     let message = 'ID necesaria'
+    let data = null
     if (id) {
         status = 404
         message = 'Platillo inexistente'
         if (platillos.find(platillo => platillo.id == id)) {
             const index = platillos.findIndex(platillo => platillo.id == id)
+            data = platillos[index]
             platillos.splice(index, 1)
             status = 200
             message = 'Se elimino el platillo'
@@ -96,8 +100,8 @@ router.delete('/', (req, res) => {
     }
     res.status(status).json({
         message,
-        data: null
+        data
     })
 })
 
-app.listen(port, () => console.log(`Servidor escuchando en http://localhost:${port}`))
+app.listen(PORT, () => console.log(`Servidor escuchando en http://localhost:${PORT}`))
